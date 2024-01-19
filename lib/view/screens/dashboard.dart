@@ -39,9 +39,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
               labelType: NavigationRailLabelType.selected,
               // backgroundColor: Theme.of(context).,
-              selectedIconTheme: const IconThemeData(color: Colors.white),
-              unselectedIconTheme: const IconThemeData(color: Colors.white),
-              selectedLabelTextStyle: const TextStyle(color: Colors.white),
+              // selectedIconTheme: const IconThemeData(color: Colors.white),
+              // unselectedIconTheme: const IconThemeData(color: Colors.white),
+              // selectedLabelTextStyle: const TextStyle(color: Colors.white),
               destinations: const <NavigationRailDestination>[
                 NavigationRailDestination(
                     padding: EdgeInsets.all(16),

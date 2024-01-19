@@ -1,5 +1,5 @@
 name: portfolio_builder_app
-description: "A Portfolio app project tat is comphatible for all devices including the web. Assisting users to easily create portfolios."
+description: "A Portfolio app project tat is compatible for all devices including the web. Assisting users to easily create portfolios. This GUI project written in Flutter aims at creating a portfolio builder solution, where anyone could make fast and easy porfolios without prio knowledge on programming, and as well share the portfolio online for anyone to see. "
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
