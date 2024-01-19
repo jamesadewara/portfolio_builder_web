@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:portfolio_builder_app/control/validators.dart';
 import 'package:portfolio_builder_app/model/auth.dart';
 import 'package:portfolio_builder_app/model/notifier_listener.dart';
 import 'package:portfolio_builder_app/view/components/mytextfield.dart';
@@ -18,12 +19,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
   Auth auth = Auth();
 
-  void signUserIn() async {
+  void signUserIn(BuildContext context) async {
     try {
-      // auth.loginUser(emailController.text, passwordController.text);
+      auth.loginUser(emailController.text, passwordController.text);
+      Navigator.of(context).pushReplacementNamed("/dashboard");
     } catch (e) {
       genericErrorMessage("Error", "could not log you in, try again");
     }
+    Navigator.of(context).pushReplacementNamed("/dashboard");
   }
 
   void genericErrorMessage(String title, String message) {
@@ -81,18 +84,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: <Widget>[
                       //useremail
                       MyTextField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        hintText: 'Enter your username',
-                        obscureText: false,
-                        validate: "email",
-                      ),
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          hintText: 'Enter your email',
+                          obscureText: false,
+                          validator: validateUserEmail),
                       const SizedBox(height: 15),
                       //password
                       MyTextField(
                         controller: passwordController,
                         hintText: 'Enter your password',
                         obscureText: true,
+                        validator: validateUserPassword,
                       ),
 
                       const SizedBox(height: 15),
@@ -103,17 +106,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             // Validate returns true if the form is valid, or false otherwise.
                             if (_loginFormKey.currentState!.validate()) {
                               listener.setLoading(true);
-                              signUserIn();
+                              signUserIn(context);
                               listener.setLoading(false);
-                            } else {
-                              genericErrorMessage(
-                                  "Input Error", "email is required");
                             }
                           },
                           child: const Padding(
                             padding: EdgeInsets.only(
                                 left: 16, right: 16, top: 8, bottom: 8),
-                            child: Text('Sign Up'),
+                            child: Text('SignIn'),
                           )),
 
                       const SizedBox(

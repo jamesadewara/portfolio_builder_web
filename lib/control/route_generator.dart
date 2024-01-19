@@ -20,7 +20,10 @@ class RouteGenerator {
         );
 
       case '/login':
-        return redirectToAuth();
+        return MaterialPageRoute(
+            builder: (_) => const BaseApp(
+                  child: LoginScreen(),
+                ));
 
       case '/signup':
         return MaterialPageRoute(
@@ -30,22 +33,30 @@ class RouteGenerator {
 
       case '/dashboard':
         if (!auth.isLogged()) {
-          return redirectToAuth();
+          return redirectAuthRoute();
+        } else {
+          return MaterialPageRoute(
+              builder: (_) => const BaseApp(
+                    child: DashboardScreen(),
+                  ));
+        }
+
+      case '/portfolio':
+        if (!auth.isLogged()) {
+          return redirectAuthRoute();
         } else {
           // Validation of correct data type
           if (args is String) {
             return MaterialPageRoute(
-                builder: (_) => BaseApp(
-                      child: Container(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              auth.logoutUser();
-                            },
-                            child: const Text("Logout now")),
-                        // data: args,
-                      ),
+                builder: (_) => Center(
+                      child: ElevatedButton(
+                          onPressed: () {
+                            auth.logoutUser();
+                          },
+                          child: const Text("Logout now")),
                     ));
           }
+
           // If args is not of the correct type, return an error page.
           // You can also throw an exception while in development.
           return _errorRoute();
@@ -57,24 +68,44 @@ class RouteGenerator {
     }
   }
 
-  static Route<dynamic> redirectToAuth() {
+  static MaterialPageRoute redirectAuthRoute() {
     return MaterialPageRoute(
-        builder: (_) => BaseApp(
+        builder: (_) => const BaseApp(
               child: LoginScreen(),
             ));
   }
 
   static Route<dynamic> _errorRoute() {
     return MaterialPageRoute(builder: (_) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Error'),
-        ),
-        body: const Center(
-          child: Text('ERROR'),
-        ),
-      );
+      return const ErrorPage();
     });
+  }
+}
+
+class ErrorPage extends StatelessWidget {
+  const ErrorPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushNamed(
+              '/dashboard',
+            );
+          },
+        ),
+        title: const Text('Oops'),
+      ),
+      body: const Center(
+        child: Text(
+          'Oops, something went wrong. Please try again or go back to your previous page',
+          softWrap: true,
+        ),
+      ),
+    );
   }
 }
 

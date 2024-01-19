@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:portfolio_builder_app/control/validators.dart';
 
 class MyTextField extends StatelessWidget {
   const MyTextField(
       {super.key,
       required this.controller,
-      this.validate = "empty",
+      this.validator,
       this.obscureText = false,
       this.keyboardType = TextInputType.text,
       this.hintText = ""});
@@ -13,7 +12,7 @@ class MyTextField extends StatelessWidget {
   final bool obscureText;
   final String hintText;
   final TextInputType keyboardType;
-  final String validate;
+  final String? Function(String? value)? validator;
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +20,7 @@ class MyTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
-      validator: (value) {
-        switch (validate) {
-          case "email":
-            validateEmail(value!);
-        }
-        return null;
-      },
+      validator: validator,
       decoration: InputDecoration(
         // labelText: ,
         enabledBorder: OutlineInputBorder(

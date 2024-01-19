@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     Timer(widget.duration!, () {
-      Navigator.of(context).pushNamed(
+      Navigator.of(context).pushReplacementNamed(
         '/dashboard',
       );
     });
