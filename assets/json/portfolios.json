@@ -1,0 +1,34 @@
+[
+    {
+        "id": "12345",
+        "name": "Project 1",
+        "description": "A portfolio for web ui freelancing jobs",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjLKdJVaRQiuYt6l9w92ddqmHKDZ1wZUwJA9Dljb40FJwHchi-TKPc5gXW2yYe-1nn2B8&usqp=CAU",
+        "createdAt": "2024-01-20T14:30:00.000Z",
+        "updatedAt": "2024-01-20T14:30:00.000Z"
+    },
+    {
+        "id": "123456",
+        "name": "Project 2",
+        "description": "My second portfolio template for web ui freelancing jobs",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRom5ZbGXAAI6N6536GcvGyJtuqKs7EV2eqaQ&usqp=CAU",
+         "createdAt": "2024-01-20T14:40:00.000Z",
+        "updatedAt": "2024-01-20T14:55:00.000Z"
+    },   
+    {
+        "id": "1234567",
+        "name": "Project 3",
+        "description": "A portfolio for Mobile ui freelancing jobs",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQu7A3Tp04B8D71ExG5Ysup1qd6wKEsFIk3-Q&usqp=CAU",
+         "createdAt": "2024-01-20T14:30:00.000Z",
+        "updatedAt": "2024-01-20T14:30:00.000Z"
+    },   
+    {
+        "id": "12345678",
+        "name": "Project XYZ",
+        "description": "A portfolio for Ml ui freelancing jobs",
+        "image": "https:1.com",
+         "createdAt": "2024-01-20T14:30:00.000Z",
+        "updatedAt": "2024-01-20T14:30:00.000Z"
+    }
+]
