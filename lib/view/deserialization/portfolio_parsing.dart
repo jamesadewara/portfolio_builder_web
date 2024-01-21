@@ -38,5 +38,6 @@ Future<List<Portfolio>> fetchPortfolioData() async {
       await rootBundle.loadString('assets/json/portfolios.json');
 
   final List<dynamic> jsonList = json.decode(jsonData);
+
   return jsonList.map((json) => Portfolio.fromJson(json)).toList();
 }

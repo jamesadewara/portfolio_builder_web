@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provder;
+import 'package:portfolio_builder_app/control/page_list.dart';
 import 'package:provider/provider.dart';
 import 'package:portfolio_builder_app/control/route_generator.dart';
 import 'package:portfolio_builder_app/control/app_theme.dart';
@@ -12,7 +13,7 @@ import 'package:portfolio_builder_app/model/notifier_listener.dart';
 import 'package:responsive_framework/breakpoint.dart';
 import 'package:responsive_framework/responsive_breakpoints.dart';
 
-void main() async {
+Future<void> initHive() async {
   WidgetsFlutterBinding.ensureInitialized();
   Directory directory = await path_provder.getApplicationDocumentsDirectory();
   Hive.init(directory.path);
@@ -22,7 +23,10 @@ void main() async {
   Hive.registerAdapter(BucketModelAdapter());
   await Hive.openBox<AuthModel>('authdb');
   await Hive.openBox<BucketModel>('bucketdb');
+}
 
+void main() async {
+  await initHive();
   runApp(MultiProvider(
     providers: [
       ListenableProvider<NotifyListener>(
@@ -33,15 +37,36 @@ void main() async {
   ));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  // This widget is the starting point of your application.
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    NotifyListener listener = context.watch<NotifyListener>();
+    listener.setLoading(true);
+    return MaterialApp(
+      title: 'Portfolio Splash',
+      debugShowCheckedModeBanner: false,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.system,
+      initialRoute: AppRoutes.splash,
+      routes: {
+        AppRoutes.splash: (context) => BaseApp(
+              child: SplashScreen(
+                duration: const Duration(seconds: 5),
+              ),
+            ),
+        AppRoutes.home: (context) => const MainApp(),
+      },
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,7 +75,7 @@ class _MyAppState extends State<MyApp> {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
-      initialRoute: '/',
+      initialRoute: AppRoutes.dashboard,
       onGenerateRoute: RouteGenerator.generateRoute,
       builder: (context, child) => ResponsiveBreakpoints.builder(
         child: child!,

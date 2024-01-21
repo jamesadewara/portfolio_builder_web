@@ -4,63 +4,53 @@ import 'package:portfolio_builder_app/model/auth.dart';
 import 'package:portfolio_builder_app/model/notifier_listener.dart';
 import 'package:provider/provider.dart';
 
+class AppRoutes {
+  static const String splash = '/splash';
+  static const String home = '/';
+  static const String login = '/login';
+  static const String signup = '/signup';
+  static const String dashboard = '/dashboard';
+  static const String portfolio = '/portfolio';
+}
+
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
     final args = settings.arguments;
     Auth auth = Auth();
 
-    switch (settings.name) {
-      case '/':
-        return MaterialPageRoute(
-          builder: (_) => BaseApp(
-              child: SplashScreen(
-            duration: const Duration(seconds: 5),
-          )),
-        );
-
-      case '/login':
-        return MaterialPageRoute(
-            builder: (_) => const BaseApp(
-                  child: LoginScreen(),
-                ));
-
-      case '/signup':
-        return MaterialPageRoute(
-            builder: (_) => const BaseApp(
-                  child: SignupScreen(),
-                ));
-
-      case '/dashboard':
-        if (!auth.isLogged()) {
-          return redirectAuthRoute();
-        } else {
+    if (!auth.isLogged()) {
+      switch (settings.name) {
+        case AppRoutes.signup:
           return MaterialPageRoute(
               builder: (_) => const BaseApp(
-                    child: DashboardScreen(),
+                    child: SignupScreen(),
+                  ));
+        case AppRoutes.login:
+          return redirectAuthRoute();
+        default:
+          return redirectAuthRoute();
+      }
+    }
+
+    switch (settings.name) {
+      case AppRoutes.dashboard:
+        return MaterialPageRoute(
+            builder: (_) => const BaseApp(
+                  child: DashboardScreen(),
+                ));
+
+      case AppRoutes.portfolio:
+
+        // Validation of correct data type
+        if (args is String) {
+          return MaterialPageRoute(
+              builder: (_) => Center(
+                    child: ElevatedButton(
+                        onPressed: () {}, child: const Text("Logout now")),
                   ));
         }
-
-      case '/portfolio':
-        if (!auth.isLogged()) {
-          return redirectAuthRoute();
-        } else {
-          // Validation of correct data type
-          if (args is String) {
-            return MaterialPageRoute(
-                builder: (_) => Center(
-                      child: ElevatedButton(
-                          onPressed: () {
-                            auth.logoutUser();
-                          },
-                          child: const Text("Logout now")),
-                    ));
-          }
-
-          // If args is not of the correct type, return an error page.
-          // You can also throw an exception while in development.
-          return _errorRoute();
-        }
+        return _errorRoute();
 
       default:
         // If there is no such named route in the switch statement, e.g. /third
@@ -121,6 +111,8 @@ class _BaseAppState extends State<BaseApp> {
   @override
   Widget build(BuildContext context) {
     NotifyListener listener = context.watch<NotifyListener>();
+    listener.setLoading(false);
+
     return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
       LinearProgressIndicator(
         value: listener.isLoading ? null : 0,

@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:portfolio_builder_app/control/route_generator.dart';
 import 'package:portfolio_builder_app/control/validators.dart';
 import 'package:portfolio_builder_app/model/auth.dart';
 import 'package:portfolio_builder_app/model/notifier_listener.dart';
@@ -22,11 +23,10 @@ class _LoginScreenState extends State<LoginScreen> {
   void signUserIn(BuildContext context) async {
     try {
       auth.loginUser(emailController.text, passwordController.text);
-      Navigator.of(context).pushReplacementNamed("/dashboard");
+      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
     } catch (e) {
       genericErrorMessage("Error", "could not log you in, try again");
     }
-    Navigator.of(context).pushReplacementNamed("/dashboard");
   }
 
   void genericErrorMessage(String title, String message) {
@@ -48,9 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
           actions: <Widget>[
             TextButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed(
-                    '/signup',
-                  );
+                  Navigator.of(context).pushNamed(AppRoutes.signup);
                 },
                 child: const Text("Create an account"))
           ]),

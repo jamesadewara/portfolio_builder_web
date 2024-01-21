@@ -50,6 +50,7 @@ dependencies:
   vs_scrollbar: ^1.0.0
   image_field: ^0.0.8
   provider: ^6.1.1
+  responsive_grid: ^2.4.4
   
 dev_dependencies:
   flutter_test:
@@ -78,6 +79,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/images/3d-icons/
     - assets/json/
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,8 +1,10 @@
 import 'package:hive/hive.dart';
 import 'package:portfolio_builder_app/model/auth_model.dart';
 import 'package:portfolio_builder_app/model/notifier_listener.dart';
+import 'package:portfolio_builder_app/view/api/auth_api.dart';
 
 class Auth extends NotifyListener {
+  AuthApi auth_api = AuthApi();
   Box<AuthModel> collection = Hive.box<AuthModel>('authdb');
 
   signupUser(String username, String email, String password) {
@@ -27,6 +29,7 @@ class Auth extends NotifyListener {
 
   Future<void> logoutUser() async {
     try {
+      auth_api.logOut(getAuth().userId);
       collection.clear();
     } catch (e) {
       return;
@@ -43,7 +46,7 @@ class Auth extends NotifyListener {
     }
   }
 
-  AuthModel auth() {
-    return collection.get(0)!;
+  AuthModel getAuth() {
+    return collection.getAt(0)!;
   }
 }

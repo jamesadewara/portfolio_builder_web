@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MyTextField extends StatelessWidget {
   const MyTextField(
       {super.key,
       required this.controller,
       this.validator,
+      this.onChange,
       this.obscureText = false,
+      this.maxLength = null,
       this.keyboardType = TextInputType.text,
       this.hintText = ""});
   final TextEditingController controller;
@@ -13,6 +16,8 @@ class MyTextField extends StatelessWidget {
   final String hintText;
   final TextInputType keyboardType;
   final String? Function(String? value)? validator;
+  final String? Function(String? value)? onChange;
+  final int? maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +25,9 @@ class MyTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
+      maxLength: maxLength,
       validator: validator,
+      onChanged: onChange,
       decoration: InputDecoration(
         // labelText: ,
         enabledBorder: OutlineInputBorder(
