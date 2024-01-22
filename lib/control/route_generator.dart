@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import "package:portfolio_builder_app/control/page_list.dart";
 import 'package:portfolio_builder_app/model/auth.dart';
-import 'package:portfolio_builder_app/model/notifier_listener.dart';
+import 'package:portfolio_builder_app/control/notifier_listener.dart';
+import 'package:portfolio_builder_app/view/screens/form.dart';
 import 'package:provider/provider.dart';
 
 class AppRoutes {
@@ -10,13 +11,13 @@ class AppRoutes {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String dashboard = '/dashboard';
-  static const String portfolio = '/portfolio';
+  static const String form = '/form';
 }
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
-    final args = settings.arguments;
+    final Object? args = settings.arguments;
     Auth auth = Auth();
 
     if (!auth.isLogged()) {
@@ -24,6 +25,7 @@ class RouteGenerator {
         case AppRoutes.signup:
           return MaterialPageRoute(
               builder: (_) => const BaseApp(
+                    pageIsLoading: false,
                     child: SignupScreen(),
                   ));
         case AppRoutes.login:
@@ -37,18 +39,15 @@ class RouteGenerator {
       case AppRoutes.dashboard:
         return MaterialPageRoute(
             builder: (_) => const BaseApp(
+                  pageIsLoading: false,
                   child: DashboardScreen(),
                 ));
 
-      case AppRoutes.portfolio:
+      case AppRoutes.form:
 
         // Validation of correct data type
-        if (args is String) {
-          return MaterialPageRoute(
-              builder: (_) => Center(
-                    child: ElevatedButton(
-                        onPressed: () {}, child: const Text("Logout now")),
-                  ));
+        if (args != null) {
+          return MaterialPageRoute(builder: (_) => FormScreen(id: args));
         }
         return _errorRoute();
 
@@ -61,6 +60,7 @@ class RouteGenerator {
   static MaterialPageRoute redirectAuthRoute() {
     return MaterialPageRoute(
         builder: (_) => const BaseApp(
+              pageIsLoading: false,
               child: LoginScreen(),
             ));
   }
@@ -100,22 +100,37 @@ class ErrorPage extends StatelessWidget {
 }
 
 class BaseApp extends StatefulWidget {
-  const BaseApp({super.key, required this.child});
+  const BaseApp({
+    super.key,
+    required this.child,
+    required this.pageIsLoading,
+  });
 
   final Widget child;
+  final bool pageIsLoading;
+
   @override
   State<BaseApp> createState() => _BaseAppState();
 }
 
 class _BaseAppState extends State<BaseApp> {
+  bool listener = true;
+  @override
+  void initState() {
+    listener = widget.pageIsLoading;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    NotifyListener listener = context.watch<NotifyListener>();
-    listener.setLoading(false);
-
+    bool listener = context.watch<NotifyListener>().isLoading;
     return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
       LinearProgressIndicator(
-        value: listener.isLoading ? null : 0,
+        value: widget.pageIsLoading
+            ? null
+            : listener
+                ? null
+                : 0,
       ),
       Expanded(child: widget.child)
     ]);

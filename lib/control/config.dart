@@ -4,6 +4,6 @@ Map api = {
     "endpoints": {"logout": "/logout"}
   },
   "app": {
-    "base_url": "https://www.portfiolio.com",
+    "base_url": "https://stable-baselines.readthedocs.io",
   },
 };

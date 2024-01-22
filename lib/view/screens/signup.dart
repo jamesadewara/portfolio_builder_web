@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:portfolio_builder_app/control/validators.dart';
 import 'package:portfolio_builder_app/model/auth.dart';
-import 'package:portfolio_builder_app/model/notifier_listener.dart';
+import 'package:portfolio_builder_app/control/notifier_listener.dart';
 import 'package:portfolio_builder_app/view/components/mytextfield.dart';
 import 'package:provider/provider.dart';
 

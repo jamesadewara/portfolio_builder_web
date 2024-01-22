@@ -2,14 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
-class Portfolio {
-  Portfolio({
+class Template {
+  Template({
     required this.id,
     required this.name,
     required this.description,
     required this.image,
-    required this.url,
-    required this.templateId,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -18,27 +16,22 @@ class Portfolio {
   final String name;
   final String description;
   final String image;
-  final String url;
-  final String templateId;
   final String createdAt;
   final String updatedAt;
 
-  factory Portfolio.fromJson(Map<String, dynamic> json) {
-    return Portfolio(
+  factory Template.fromJson(Map<String, dynamic> json) {
+    return Template(
       id: json['id'],
       name: json['name'],
       description: json['description'],
       image: json['image'],
-      url:
-          "https://stackoverflow.com/questions/55885433/flutter-dart-how-to-add-copy-to-clipboard-on-tap-to-a-app",
-      templateId: json['id'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
     );
   }
 }
 
-Future<List<Portfolio>> fetchPortfolioData() async {
+Future<List<Template>> fetchTemplateData() async {
   // const String jsonData =
   //     '{"data": [{"title": "Item 1", "description": "Description 1"}, {"title": "Item 2", "description": "Description 2"}]}';
   final String jsonData =
@@ -46,5 +39,5 @@ Future<List<Portfolio>> fetchPortfolioData() async {
 
   final List<dynamic> jsonList = json.decode(jsonData);
 
-  return jsonList.map((json) => Portfolio.fromJson(json)).toList();
+  return jsonList.map((json) => Template.fromJson(json)).toList();
 }

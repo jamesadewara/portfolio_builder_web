@@ -1,5 +1,3 @@
-import 'package:portfolio_builder_app/control/config.dart';
-
 String? validateField(value) {
   if (value.length < 5) {
     return 'Please enter at least 4 characters';
@@ -46,9 +44,8 @@ String? validateUserPassword(value) {
 }
 
 String? validateUrl(value) {
-  String appUrl = api["app"]["base_url"];
   String portfolioName =
       value.toString().replaceAll(RegExp(r' '), '_').toLowerCase();
 
-  return "$appUrl/project/$portfolioName";
+  return portfolioName;
 }

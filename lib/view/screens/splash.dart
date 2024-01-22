@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:portfolio_builder_app/control/route_generator.dart';
-import 'package:portfolio_builder_app/model/notifier_listener.dart';
-import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class SplashScreen extends StatefulWidget {
@@ -43,8 +41,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    NotifyListener listener = context.watch<NotifyListener>();
-    listener.setLoading(false);
     return Scaffold(
       body: Container(
         color: Theme.of(context).canvasColor,

@@ -9,7 +9,7 @@ import 'package:portfolio_builder_app/control/route_generator.dart';
 import 'package:portfolio_builder_app/control/app_theme.dart';
 import 'package:portfolio_builder_app/model/auth_model.dart';
 import 'package:portfolio_builder_app/model/bucket_model.dart';
-import 'package:portfolio_builder_app/model/notifier_listener.dart';
+import 'package:portfolio_builder_app/control/notifier_listener.dart';
 import 'package:responsive_framework/breakpoint.dart';
 import 'package:responsive_framework/responsive_breakpoints.dart';
 
@@ -43,8 +43,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    NotifyListener listener = context.watch<NotifyListener>();
-    listener.setLoading(true);
     return MaterialApp(
       title: 'Portfolio Splash',
       debugShowCheckedModeBanner: false,
@@ -54,6 +52,7 @@ class MyApp extends StatelessWidget {
       initialRoute: AppRoutes.splash,
       routes: {
         AppRoutes.splash: (context) => BaseApp(
+              pageIsLoading: true,
               child: SplashScreen(
                 duration: const Duration(seconds: 5),
               ),

@@ -59,7 +59,10 @@ class _MyListTileState extends State<MyListTile> {
                       isDownloading = false;
                     });
                   },
-                  icon: const Icon(Icons.close))
+                  icon: const Icon(
+                    Icons.close,
+                    size: 16,
+                  )),
             ]),
           ),
           Visibility(

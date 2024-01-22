@@ -1,13 +1,16 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:portfolio_builder_app/control/config.dart';
 import 'package:portfolio_builder_app/control/route_generator.dart';
 import 'package:portfolio_builder_app/control/validators.dart';
 import 'package:portfolio_builder_app/model/auth.dart';
-import 'package:portfolio_builder_app/model/notifier_listener.dart';
+import 'package:portfolio_builder_app/control/notifier_listener.dart';
 import 'package:portfolio_builder_app/view/components/mycard.dart';
 import 'package:portfolio_builder_app/view/components/mylisttile.dart';
 import 'package:portfolio_builder_app/view/components/mytextfield.dart';
 import 'package:portfolio_builder_app/view/deserialization/portfolio_parsing.dart';
+import 'package:portfolio_builder_app/view/deserialization/template_parsing.dart';
+
 import 'package:provider/provider.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -197,21 +200,24 @@ class AddNewPage extends StatefulWidget {
 }
 
 class _AddNewPageState extends State<AddNewPage> {
+  final _createPortfolioFormKey = GlobalKey<FormState>();
   FocusNode searchFocusNode = FocusNode();
   FocusNode templateFocusNode = FocusNode();
 
-  final _createPortfolioFormKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   String projectUrl = "";
+  String templateId = "";
 
   @override
   void initState() {
+    projectUrl = "";
+    templateId = "";
     super.initState();
   }
 
   void createPortfolioProject(BuildContext context) async {
     try {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.portfolio);
+      Navigator.of(context).pushNamed(AppRoutes.form, arguments: "12345");
     } catch (e) {
       genericErrorMessage("Error", "could not create your project, try again");
     }
@@ -229,9 +235,10 @@ class _AddNewPageState extends State<AddNewPage> {
   @override
   Widget build(BuildContext context) {
     NotifyListener listener = context.watch<NotifyListener>();
+    String appUrl = api["app"]["base_url"];
 
-    return Center(
-        child: Column(
+    return Scaffold(
+        body: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Card(
@@ -239,6 +246,8 @@ class _AddNewPageState extends State<AddNewPage> {
             child: Padding(
                 padding: const EdgeInsets.all(32),
                 child: SingleChildScrollView(
+                    child: Form(
+                  key: _createPortfolioFormKey,
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,21 +280,20 @@ class _AddNewPageState extends State<AddNewPage> {
                               setState(() {
                                 projectUrl =
                                     validateUrl(nameController.text).toString();
-                                // nameController;
                               });
                               return null;
                             }),
                         const SizedBox(
                           height: 32,
                         ),
-                        Text("Project URL: $projectUrl"),
+                        Text("Project URL: $appUrl/project/$projectUrl"),
                         const SizedBox(
                           height: 32,
                         ),
                         FutureBuilder(
-                          future: fetchPortfolioData(),
+                          future: fetchTemplateData(),
                           builder: (context,
-                              AsyncSnapshot<List<Portfolio>> snapshot) {
+                              AsyncSnapshot<List<Template>> snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return const Center(
@@ -298,26 +306,26 @@ class _AddNewPageState extends State<AddNewPage> {
                                 textFieldDecoration: const InputDecoration(
                                     hintText: "Select your portfolio template"),
                                 clearOption: true,
-                                // controller: templateController,
                                 textFieldFocusNode: templateFocusNode,
                                 searchFocusNode: searchFocusNode,
                                 searchAutofocus: true,
                                 dropDownItemCount: 8,
                                 searchShowCursor: true,
                                 enableSearch: true,
-                                // validator: validateDropdownField,
+                                validator: validateDropdownField,
                                 searchKeyboardType: TextInputType.text,
-                                dropDownList: snapshot.data!.map((portfolio) {
+                                dropDownList: snapshot.data!.map((template) {
                                   return DropDownValueModel(
-                                      name: portfolio.name,
-                                      value: portfolio.description,
-                                      toolTipMsg: portfolio.name);
+                                    name: template.name,
+                                    value: template.description,
+                                    toolTipMsg: template.name,
+                                  );
                                 }).toList(),
-                                onChanged: (val) {},
                               );
                             }
                           },
                         ),
+
                         const SizedBox(
                           height: 32,
                         ),
@@ -345,9 +353,11 @@ class _AddNewPageState extends State<AddNewPage> {
                                   if (_createPortfolioFormKey.currentState!
                                       .validate()) {
                                     listener.setLoading(true);
+
                                     createPortfolioProject(context);
                                     listener.setLoading(false);
                                   }
+                                  return;
                                 },
                                 child: const Padding(
                                     padding: EdgeInsets.only(
@@ -358,7 +368,7 @@ class _AddNewPageState extends State<AddNewPage> {
                           ],
                         )
                       ]),
-                )))
+                ))))
       ],
     ));
   }
@@ -373,8 +383,8 @@ class PortfolioPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Column(
+    return Scaffold(
+        body: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         const SizedBox(
@@ -436,8 +446,8 @@ class TemplatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Column(
+    return Scaffold(
+        body: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         const SizedBox(
@@ -461,30 +471,34 @@ class TemplatePage extends StatelessWidget {
           height: 32,
         ),
         Expanded(
-            child: FutureBuilder(
-          future: fetchPortfolioData(),
-          builder: (context, AsyncSnapshot<List<Portfolio>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final template = snapshot.data![index];
-                  return MyListTile(
-                    id: template.id,
-                    title: template.name,
-                    subtitle: template.description,
-                    image: template.image,
-                    onPressed: () {},
-                  );
-                },
-              );
-            }
-          },
-        )),
+          child: FutureBuilder(
+            future: fetchTemplateData(),
+            builder: (context, AsyncSnapshot<List<Template>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (snapshot.data == null) {
+                // Handle the case when snapshot.data is null
+                return const Center(child: Text('Data is null'));
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final template = snapshot.data![index];
+                    return MyListTile(
+                      id: template.id,
+                      title: template.name,
+                      subtitle: template.description,
+                      image: template.image,
+                      onPressed: () {},
+                    );
+                  },
+                );
+              }
+            },
+          ),
+        ),
       ],
     ));
   }

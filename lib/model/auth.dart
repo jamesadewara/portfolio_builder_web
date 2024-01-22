@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:portfolio_builder_app/model/auth_model.dart';
-import 'package:portfolio_builder_app/model/notifier_listener.dart';
+import 'package:portfolio_builder_app/control/notifier_listener.dart';
 import 'package:portfolio_builder_app/view/api/auth_api.dart';
 
 class Auth extends NotifyListener {

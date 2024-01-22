@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:portfolio_builder_app/control/route_generator.dart';
 import 'package:portfolio_builder_app/control/validators.dart';
 import 'package:portfolio_builder_app/model/auth.dart';
-import 'package:portfolio_builder_app/model/notifier_listener.dart';
+import 'package:portfolio_builder_app/control/notifier_listener.dart';
 import 'package:portfolio_builder_app/view/components/mytextfield.dart';
 import 'package:provider/provider.dart';
 
