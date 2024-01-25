@@ -56,13 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void logOut(BuildContext context) async {
-    try {
-      auth.logoutUser();
-      Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-    } catch (e) {
-      genericErrorMessage("Error",
-          "could not log you out, try again or check your internet connection");
-    }
+    auth.logoutUser(context);
   }
 
   void genericErrorMessage(String title, String message) {

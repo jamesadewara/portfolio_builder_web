@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:portfolio_builder_app/control/validators.dart';
@@ -21,23 +23,13 @@ class _SignupScreenState extends State<SignupScreen> {
   final confirmPasswordController = TextEditingController();
   Auth auth = Auth();
 
-  void signUserUp(BuildContext context) async {
-    try {
-      auth.signupUser(usernameController.text, emailController.text,
-          passwordController.text);
-      Navigator.of(context).pushReplacementNamed("/dashboard");
-    } catch (e) {
-      genericErrorMessage("Error", "could not log you in, try again");
-    }
-  }
-
-  void genericErrorMessage(String title, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: Theme.of(context).splashColor,
-        content: ListTile(
-          title: Text(title),
-          subtitle: Text(message),
-        )));
+  Future<void> signUserUp(BuildContext context) async {
+    auth.signupUser(
+      context,
+      username: usernameController.text,
+      password: passwordController.text,
+      email: emailController.text,
+    );
   }
 
   @override
@@ -118,10 +110,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
                       //signup button
                       ElevatedButton(
-                          onPressed: () {
-                            if (_signupFormKey.currentState!.validate()) {
-                              listener.setLoading(true);
-                              signUserUp(context);
+                          onPressed: () async {
+                            try {
+                              if (_signupFormKey.currentState!.validate()) {
+                                listener.setLoading(true);
+                                await signUserUp(context);
+                              }
+                            } finally {
                               listener.setLoading(false);
                             }
                           },

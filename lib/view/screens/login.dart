@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:portfolio_builder_app/control/route_generator.dart';
@@ -21,21 +23,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Auth auth = Auth();
 
   void signUserIn(BuildContext context) async {
-    try {
-      auth.loginUser(emailController.text, passwordController.text);
-      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
-    } catch (e) {
-      genericErrorMessage("Error", "could not log you in, try again");
-    }
-  }
-
-  void genericErrorMessage(String title, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: Theme.of(context).splashColor,
-        content: ListTile(
-          title: Text(title),
-          subtitle: Text(message),
-        )));
+    auth.signinUser(
+      context,
+      email: emailController.text,
+      password: passwordController.text,
+    );
   }
 
   @override
