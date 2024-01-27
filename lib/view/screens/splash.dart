@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:portfolio_builder_app/control/route_generator.dart';
 
 // ignore: must_be_immutable
@@ -48,7 +49,11 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             Align(
               alignment: Alignment.center,
-              child: Image.asset("assets/images/icon.png"),
+              child: Image.asset("assets/images/icon.png")
+                  .animate()
+                  .fadeIn(duration: 600.ms)
+                  .then(delay: 250.ms)
+                  .rotate(duration: 600.ms, begin: 1),
             )
           ],
         ),

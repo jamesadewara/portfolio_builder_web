@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import "package:portfolio_builder_app/control/page_list.dart";
 import 'package:portfolio_builder_app/model/auth.dart';
 import 'package:portfolio_builder_app/control/notifier_listener.dart';
-import 'package:portfolio_builder_app/view/screens/form.dart';
 import 'package:provider/provider.dart';
 
 class AppRoutes {
@@ -12,6 +11,7 @@ class AppRoutes {
   static const String signup = '/signup';
   static const String dashboard = '/dashboard';
   static const String form = '/form';
+  static const String profile = '/profile';
 }
 
 class RouteGenerator {
@@ -41,6 +41,13 @@ class RouteGenerator {
             builder: (_) => const BaseApp(
                   pageIsLoading: false,
                   child: DashboardScreen(),
+                ));
+
+      case AppRoutes.profile:
+        return MaterialPageRoute(
+            builder: (_) => const BaseApp(
+                  pageIsLoading: false,
+                  child: ProfileScreen(),
                 ));
 
       case AppRoutes.form:
@@ -135,4 +142,14 @@ class _BaseAppState extends State<BaseApp> {
       Expanded(child: widget.child)
     ]);
   }
+}
+
+class SettingsOption {
+  final String title;
+  final String? subtitle;
+  final Icon? icon;
+  final Function(BuildContext) onTap;
+
+  SettingsOption(
+      {required this.title, this.icon, this.subtitle, required this.onTap});
 }

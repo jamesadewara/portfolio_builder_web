@@ -4,10 +4,15 @@ Map api = {
     "endpoints": {
       "logout": "token/destroy/",
       "signup": "users/",
-      "signin": "jwt/create/"
+      "signin": "jwt/create/",
+      "update": "users/me/",
+      "detail": "users/me/",
+      "delete": "users/delete/"
     }
   },
   "app": {
     "base_url": "https://stable-baselines.readthedocs.io",
+    "version": '1.0.0',
+    "tutorial": "https://youtu.be/5dQxcmMd5hg?si=y8kJJWN2VwkdHZ7v"
   },
 };

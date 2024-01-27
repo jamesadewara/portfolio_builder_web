@@ -1,10 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:async';
+
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_list_view/flutter_list_view.dart';
 import 'package:portfolio_builder_app/control/config.dart';
 import 'package:portfolio_builder_app/control/route_generator.dart';
 import 'package:portfolio_builder_app/control/validators.dart';
 import 'package:portfolio_builder_app/model/auth.dart';
 import 'package:portfolio_builder_app/control/notifier_listener.dart';
+import 'package:portfolio_builder_app/model/auth_model.dart';
 import 'package:portfolio_builder_app/view/components/mycard.dart';
 import 'package:portfolio_builder_app/view/components/mylisttile.dart';
 import 'package:portfolio_builder_app/view/components/mytextfield.dart';
@@ -12,8 +19,10 @@ import 'package:portfolio_builder_app/view/deserialization/portfolio_parsing.dar
 import 'package:portfolio_builder_app/view/deserialization/template_parsing.dart';
 
 import 'package:provider/provider.dart';
+import 'package:responsive_framework/responsive_breakpoints.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -26,26 +35,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Auth auth = Auth();
   int _selectedIndex = 0;
 
-  List<Map<dynamic, Widget>> navIcons = [
+  List<Map<String, dynamic>> navIcons = [
+    {"label": "Create New", "icon": Icons.add, "selectedIcon": Icons.add},
     {
-      "label": const Text("Create New"),
-      "icon": const Icon(Icons.add),
-      "selectedIcon": const Icon(Icons.add)
+      "label": "Portfolios",
+      "icon": Icons.dashboard,
+      "selectedIcon": Icons.dashboard_outlined
     },
     {
-      "label": const Text("Portfolios"),
-      "icon": const Icon(Icons.dashboard),
-      "selectedIcon": const Icon(Icons.dashboard_outlined)
+      "label": "Templates",
+      "icon": Icons.recommend,
+      "selectedIcon": Icons.recommend_outlined
     },
     {
-      "label": const Text("Templates"),
-      "icon": const Icon(Icons.recommend),
-      "selectedIcon": const Icon(Icons.recommend_outlined)
-    },
-    {
-      "label": const Text("Logout"),
-      "icon": const Icon(Icons.logout),
-      "selectedIcon": const Icon(Icons.logout_outlined)
+      "label": "Settings",
+      "icon": Icons.settings,
+      "selectedIcon": Icons.settings_outlined
     }
   ];
 
@@ -53,10 +58,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     _selectedIndex = 1;
     super.initState();
-  }
-
-  void logOut(BuildContext context) async {
-    auth.logoutUser(context);
   }
 
   void genericErrorMessage(String title, String message) {
@@ -71,113 +72,105 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     NotifyListener listener = context.watch<NotifyListener>();
+    String tutorialUrl = api["app"]["tutorial"];
+
     return Scaffold(
         resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          leading: Image.asset(
+            "assets/images/icon.png",
+            width: 48,
+            height: 48,
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+                onPressed: () {
+                  launchUrl(Uri(
+                    scheme: 'https',
+                    path: tutorialUrl,
+                  ));
+                },
+                child: const Padding(
+                  padding:
+                      EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+                  child: Text(
+                    "Watch Tutorial",
+                  ),
+                )),
+            const SizedBox(
+              width: 16,
+            )
+          ],
+        ),
+        bottomNavigationBar: Visibility(
+          visible: ResponsiveBreakpoints.of(context).between(MOBILE, TABLET),
+          child: BottomNavigationBar(
+              elevation: 2,
+              selectedItemColor: Colors.purple,
+              unselectedItemColor: Theme.of(context).colorScheme.outline,
+              currentIndex: _selectedIndex,
+              onTap: (int index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              items: navIcons.map((e) {
+                return BottomNavigationBarItem(
+                    icon: Icon(e["icon"]!),
+                    activeIcon: Icon(e["selectedIcon"]),
+                    label: e["label"]);
+              }).toList()),
+        ),
         body: SafeArea(
             child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            NavigationRail(
-              leading: Image.asset(
-                "assets/images/icon.png",
-                width: 48,
-                height: 48,
-              ),
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: (int index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              minWidth: 78,
-              useIndicator: true,
-              extended: true,
-              indicatorShape: const ContinuousRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12))),
-              // labelType: NavigationRailLabelType.all,
-              // backgroundColor: Theme.of(context).,
-              // selectedIconTheme: const IconThemeData(color: Colors.white),
-              // unselectedIconTheme: const IconThemeData(color: Colors.white),
-              // selectedLabelTextStyle: const TextStyle(color: Colors.white),
-              destinations: navIcons.map((e) {
-                return NavigationRailDestination(
-                    icon: e["icon"]!,
-                    selectedIcon: e["selectedIcon"],
-                    label: e["label"]!);
-              }).toList(),
-            ),
-            const VerticalDivider(
-              thickness: 1,
-              width: 2,
-            ),
-            Expanded(
-              child: IndexedStack(
-                index: _selectedIndex,
-                children: [
-                  const AddNewPage(),
-                  PortfolioPage(),
-                  TemplatePage(),
-                  Center(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                        Image.asset(
-                          "assets/images/3d-icons/info.png",
-                          width: 224,
-                          height: 224,
-                        ),
-                        const SizedBox(height: 32),
-                        AutoSizeText(
-                          "Confirm Logout",
-                          style: Theme.of(context).textTheme.displayLarge,
-                          maxLines: 1,
-                        ),
-                        const SizedBox(height: 32),
-                        AutoSizeText(
-                          "Are you sure you want to Logout",
-                          style: Theme.of(context).textTheme.headlineMedium,
-                          maxLines: 2,
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _selectedIndex = 1;
-                                  });
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.only(
-                                      left: 16, right: 16, top: 8, bottom: 8),
-                                  child: Text(
-                                    "No",
-                                  ),
-                                )),
-                            ElevatedButton(
-                                style: const ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStatePropertyAll<Color>(
-                                          Colors.purple),
-                                ),
-                                onPressed: () {
-                                  listener.setLoading(true);
-                                  logOut(context);
-                                  listener.setLoading(false);
-                                },
-                                child: const Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 16, right: 16, top: 8, bottom: 8),
-                                    child: Text(
-                                      "Yes",
-                                    )))
-                          ],
-                        )
-                      ]))
+            Visibility(
+              visible:
+                  !ResponsiveBreakpoints.of(context).between(MOBILE, TABLET),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  NavigationRail(
+                    selectedIndex: _selectedIndex,
+                    onDestinationSelected: (int index) {
+                      setState(() {
+                        _selectedIndex = index;
+                      });
+                    },
+                    minWidth: 78,
+                    useIndicator: true,
+                    extended: true,
+                    indicatorShape: const ContinuousRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(12))),
+                    // labelType: NavigationRailLabelType.all,
+                    // backgroundColor: Theme.of(context).,
+                    // selectedIconTheme: const IconThemeData(color: Colors.white),
+                    // unselectedIconTheme: const IconThemeData(color: Colors.white),
+                    // selectedLabelTextStyle: const TextStyle(color: Colors.white),
+                    destinations: navIcons.map((e) {
+                      return NavigationRailDestination(
+                          icon: Icon(e["icon"]!),
+                          selectedIcon: Icon(e["selectedIcon"]),
+                          label: Text(e["label"]!));
+                    }).toList(),
+                  ),
+                  const VerticalDivider(
+                    thickness: 1,
+                    width: 2,
+                  ),
                 ],
               ),
+            ),
+            Expanded(
+              child: IndexedStack(index: _selectedIndex, children: [
+                const AddNewPage(),
+                PortfolioPage(),
+                TemplatePage(),
+                SettingsPage()
+              ]),
             ),
           ],
         )));
@@ -236,7 +229,13 @@ class _AddNewPageState extends State<AddNewPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Card(
-            margin: const EdgeInsets.only(left: 128, right: 128),
+            margin: EdgeInsets.only(
+                left: ResponsiveBreakpoints.of(context).between(MOBILE, TABLET)
+                    ? 12
+                    : 128,
+                right: ResponsiveBreakpoints.of(context).between(MOBILE, TABLET)
+                    ? 12
+                    : 128),
             child: Padding(
                 padding: const EdgeInsets.all(32),
                 child: SingleChildScrollView(
@@ -249,16 +248,14 @@ class _AddNewPageState extends State<AddNewPage> {
                         const SizedBox(
                           height: 32,
                         ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              AutoSizeText(
-                                "Create a new Portfolio Website",
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.displayLarge,
-                                maxLines: 1,
-                              ),
-                            ]),
+                        Center(
+                          child: AutoSizeText(
+                            "Create a new Portfolio Website",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.displayLarge,
+                            maxLines: 2,
+                          ),
+                        ),
                         const SizedBox(
                           height: 32,
                         ),
@@ -360,7 +357,7 @@ class _AddNewPageState extends State<AddNewPage> {
                                       "Create",
                                     )))
                           ],
-                        )
+                        ),
                       ]),
                 ))))
       ],
@@ -381,25 +378,32 @@ class PortfolioPage extends StatelessWidget {
         body: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(
-          height: 64,
+        SizedBox(
+          height: ResponsiveBreakpoints.of(context).between(MOBILE, TABLET)
+              ? 12
+              : 64,
         ),
-        SearchBar(
-          controller: _searchController,
-          hintText: 'Type to search for your portfolios',
-          leading: const Icon(Icons.search),
-          trailing: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                _searchController.clear();
-              },
-            )
-          ],
-          onChanged: (String value) {},
+        Padding(
+          padding: const EdgeInsets.only(left: 12, right: 12),
+          child: SearchBar(
+            controller: _searchController,
+            hintText: 'Type to search for your portfolios',
+            leading: const Icon(Icons.search),
+            trailing: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  _searchController.clear();
+                },
+              )
+            ],
+            onChanged: (String value) {},
+          ),
         ),
-        const SizedBox(
-          height: 32,
+        SizedBox(
+          height: ResponsiveBreakpoints.of(context).between(MOBILE, TABLET)
+              ? 8
+              : 32,
         ),
         Expanded(
             child: FutureBuilder(
@@ -444,25 +448,32 @@ class TemplatePage extends StatelessWidget {
         body: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(
-          height: 64,
+        SizedBox(
+          height: ResponsiveBreakpoints.of(context).between(MOBILE, TABLET)
+              ? 12
+              : 64,
         ),
-        SearchBar(
-          controller: _searchController,
-          hintText: 'Type to search for templates',
-          leading: const Icon(Icons.search),
-          trailing: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                _searchController.clear();
-              },
-            )
-          ],
-          onChanged: (String value) {},
+        Padding(
+          padding: const EdgeInsets.only(left: 12, right: 12),
+          child: SearchBar(
+            controller: _searchController,
+            hintText: 'Type to search for templates',
+            leading: const Icon(Icons.search),
+            trailing: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  _searchController.clear();
+                },
+              )
+            ],
+            onChanged: (String value) {},
+          ),
         ),
-        const SizedBox(
-          height: 32,
+        SizedBox(
+          height: ResponsiveBreakpoints.of(context).between(MOBILE, TABLET)
+              ? 8
+              : 32,
         ),
         Expanded(
           child: FutureBuilder(
@@ -476,24 +487,264 @@ class TemplatePage extends StatelessWidget {
                 // Handle the case when snapshot.data is null
                 return const Center(child: Text('Data is null'));
               } else {
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final template = snapshot.data![index];
-                    return MyListTile(
-                      id: template.id,
-                      title: template.name,
-                      subtitle: template.description,
-                      image: template.image,
-                      onPressed: () {},
-                    );
-                  },
-                );
+                var template = snapshot.data;
+                return FlutterListView(
+                    delegate: FlutterListViewDelegate(
+                        (BuildContext context, index) => MyListTile(
+                              id: template![index].id,
+                              title: template[index].name,
+                              subtitle: template[index].description,
+                              image: template[index].image,
+                              onPressed: () {},
+                            ),
+                        childCount: template?.length));
               }
             },
           ),
         ),
       ],
     ));
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  final List<SettingsOption> settingsOptions = [
+    SettingsOption(
+        title: 'User Accounts',
+        subtitle: 'Manage your accounts',
+        icon: const Icon(Icons.verified_user),
+        onTap: (BuildContext context) {
+          Navigator.pushNamed(context, AppRoutes.profile);
+        }),
+    SettingsOption(
+      title: 'Logout',
+      subtitle: null,
+      icon: const Icon(Icons.logout),
+      onTap: (BuildContext context) {
+        return showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const MyLogoutConfirmationDialog();
+          },
+        );
+      },
+    ),
+    SettingsOption(
+      title: 'Delete Account',
+      subtitle: 'Once deleted, you can not recover it back',
+      icon: const Icon(Icons.delete),
+      onTap: (BuildContext context) {
+        return showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const DeleteAccountDialog();
+          },
+        );
+      },
+    ),
+    SettingsOption(
+        title: 'App Version',
+        subtitle: api["app"]["version"],
+        icon: const Icon(Icons.info),
+        onTap: (BuildContext context) {}),
+    SettingsOption(
+        title: 'Exit App',
+        subtitle: null,
+        icon: const Icon(Icons.exit_to_app),
+        onTap: (BuildContext context) {
+          Navigator.of(context).pop();
+          SystemNavigator.pop();
+        })
+  ];
+
+  SettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ListView.builder(
+        itemCount: settingsOptions.length,
+        itemBuilder: (context, index) {
+          SettingsOption option = settingsOptions[index];
+          return Padding(
+            padding: EdgeInsets.only(
+                top: 12,
+                left: ResponsiveBreakpoints.of(context).between(MOBILE, TABLET)
+                    ? 8
+                    : 120,
+                right: ResponsiveBreakpoints.of(context).between(MOBILE, TABLET)
+                    ? 8
+                    : 120),
+            child: Card(
+              child: ListTile(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                leading: option.icon,
+                title: Text(option.title),
+                subtitle:
+                    option.subtitle != null ? Text(option.subtitle!) : null,
+                onTap: () => option.onTap(context),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class MyLogoutConfirmationDialog extends StatelessWidget {
+  const MyLogoutConfirmationDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Auth auth = Auth();
+    NotifyListener listener = context.watch<NotifyListener>();
+
+    Future<void> logoutUser(BuildContext context) async {
+      auth.logoutUser(context);
+    }
+
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image.asset(
+              "assets/images/3d-icons/info.png",
+              width: 224,
+              height: 224,
+            ),
+            const SizedBox(height: 4),
+            AutoSizeText(
+              "Confirm Logout",
+              style: Theme.of(context).textTheme.displayLarge,
+              maxLines: 1,
+            ),
+            const SizedBox(height: 32),
+            AutoSizeText(
+              "Are you sure you want to Logout",
+              style: Theme.of(context).textTheme.displaySmall,
+              maxLines: 2,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Text("No"),
+                  ),
+                ),
+                ElevatedButton(
+                  style: const ButtonStyle(
+                    backgroundColor:
+                        MaterialStatePropertyAll<Color>(Colors.purple),
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    listener.setLoading(true);
+                    logoutUser(context);
+                    Timer(const Duration(seconds: 2), () {
+                      listener.setLoading(false);
+                    });
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Yes"),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DeleteAccountDialog extends StatefulWidget {
+  const DeleteAccountDialog({super.key});
+
+  @override
+  _DeleteAccountDialogState createState() => _DeleteAccountDialogState();
+}
+
+class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
+  Auth auth = Auth();
+  final GlobalKey<FormState> _deleteFormKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  bool isVerified = false;
+
+  @override
+  void initState() {
+    isVerified = false;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String? userEmail = auth.collection.get(0)?.userEmail;
+    NotifyListener listener = context.watch<NotifyListener>();
+    return AlertDialog(
+      title: const Text('Delete Account'),
+      content: Form(
+        key: _deleteFormKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Text('Please enter your email to confirm account deletion:'),
+            const SizedBox(height: 10),
+            MyTextField(
+                controller: _emailController,
+                onChange: (value) {
+                  setState(() {
+                    if (value == userEmail) {
+                      isVerified = true;
+                    }
+                  });
+                  return null;
+                },
+                validator: validateUserEmail),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(); // Close the dialog
+          },
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: isVerified
+              ? () {
+                  // Validate the form
+                  if (_deleteFormKey.currentState?.validate() == true) {
+                    listener.setLoading(true);
+                    auth.deleteUser(context);
+                    Timer(const Duration(seconds: 2), () {
+                      listener.setLoading(false);
+                    });
+                  }
+                }
+              : null,
+          style: ElevatedButton.styleFrom(
+            primary: Colors.red,
+            onPrimary: Colors.white,
+          ),
+          child: const Text('Submit'),
+        ),
+      ],
+    );
   }
 }

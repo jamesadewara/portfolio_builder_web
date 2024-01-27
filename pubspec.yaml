@@ -51,6 +51,8 @@ dependencies:
   image_field: ^0.0.8
   provider: ^6.1.1
   responsive_grid: ^2.4.4
+  url_launcher: ^6.2.4
+  flutter_list_view: ^1.1.22
 
 
 

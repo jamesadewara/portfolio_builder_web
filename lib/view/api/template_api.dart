@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:portfolio_builder_app/control/config.dart';
 import 'package:portfolio_builder_app/view/api/api_prop.dart';
 
-class AuthApi {
+class TemplateApi {
   String baseUrl = api["auth"]["base_url"];
   Map endpoints = api["auth"]["endpoints"];
 
@@ -38,9 +38,9 @@ class AuthApi {
     return _handleResponse(response);
   }
 
-  Future<ApiRequest> deleteUser(String authToken, String? userId) async {
+  Future<ApiRequest> deleteUser(String authToken) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/${endpoints["delete"]}$userId'),
+      Uri.parse('$baseUrl/${endpoints["delete"]}'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $authToken',

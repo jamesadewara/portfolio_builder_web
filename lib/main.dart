@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:portfolio_builder_app/control/route_generator.dart';
 import 'package:portfolio_builder_app/control/app_theme.dart';
 import 'package:portfolio_builder_app/model/auth_model.dart';
-import 'package:portfolio_builder_app/model/bucket_model.dart';
 import 'package:portfolio_builder_app/control/notifier_listener.dart';
 import 'package:responsive_framework/breakpoint.dart';
 import 'package:responsive_framework/responsive_breakpoints.dart';
@@ -20,9 +19,7 @@ Future<void> initHive() async {
   Hive.initFlutter(directory.path);
 
   Hive.registerAdapter(AuthModelAdapter());
-  Hive.registerAdapter(BucketModelAdapter());
   await Hive.openBox<AuthModel>('authdb');
-  await Hive.openBox<BucketModel>('bucketdb');
 }
 
 void main() async {

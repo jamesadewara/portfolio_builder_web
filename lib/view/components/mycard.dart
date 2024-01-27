@@ -21,6 +21,7 @@ class MyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         child: InkWell(
+      borderRadius: BorderRadius.circular(16),
       onTap: onPressed,
       child: Column(children: [
         CachedNetworkImage(

@@ -23,6 +23,7 @@ class MyListTile extends StatefulWidget {
 
 class _MyListTileState extends State<MyListTile> {
   bool isDownloading = false;
+
   @override
   void initState() {
     isDownloading = false;
@@ -37,7 +38,8 @@ class _MyListTileState extends State<MyListTile> {
         height: 180,
         imageUrl: widget.image,
         progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-            child: LinearProgressIndicator(value: downloadProgress.progress)),
+          child: LinearProgressIndicator(value: downloadProgress.progress),
+        ),
         errorWidget: (context, url, error) =>
             Image.asset("assets/images/icon.png"),
       ),
@@ -51,29 +53,38 @@ class _MyListTileState extends State<MyListTile> {
         children: <Widget>[
           Visibility(
             visible: isDownloading,
-            child: Stack(children: <Widget>[
-              const CircularProgressIndicator(),
-              IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isDownloading = false;
-                    });
-                  },
-                  icon: const Icon(
-                    Icons.close,
-                    size: 16,
-                  )),
-            ]),
+            child: Stack(
+              children: <Widget>[
+                CircularProgressIndicator(),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isDownloading = false;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.close,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           Visibility(
-              visible: !isDownloading,
-              child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isDownloading = true;
-                    });
-                  },
-                  icon: const Icon(Icons.download)))
+            visible: !isDownloading,
+            child: IconButton(
+              onPressed: () {
+                setState(() {
+                  isDownloading = true;
+                });
+              },
+              icon: Icon(Icons.download),
+            ),
+          ),
         ],
       ),
     );

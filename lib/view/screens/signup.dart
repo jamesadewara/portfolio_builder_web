@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:portfolio_builder_app/control/validators.dart';
@@ -7,6 +9,7 @@ import 'package:portfolio_builder_app/model/auth.dart';
 import 'package:portfolio_builder_app/control/notifier_listener.dart';
 import 'package:portfolio_builder_app/view/components/mytextfield.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_framework/responsive_breakpoints.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -61,7 +64,15 @@ class _SignupScreenState extends State<SignupScreen> {
                       .copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 25),
               Padding(
-                padding: const EdgeInsets.only(left: 240, right: 240),
+                padding: EdgeInsets.only(
+                    left: ResponsiveBreakpoints.of(context)
+                            .between(MOBILE, TABLET)
+                        ? 12
+                        : 240,
+                    right: ResponsiveBreakpoints.of(context)
+                            .between(MOBILE, TABLET)
+                        ? 12
+                        : 240),
                 child: Form(
                   key: _signupFormKey,
                   child: Column(
@@ -111,13 +122,12 @@ class _SignupScreenState extends State<SignupScreen> {
                       //signup button
                       ElevatedButton(
                           onPressed: () async {
-                            try {
-                              if (_signupFormKey.currentState!.validate()) {
-                                listener.setLoading(true);
-                                await signUserUp(context);
-                              }
-                            } finally {
-                              listener.setLoading(false);
+                            if (_signupFormKey.currentState!.validate()) {
+                              listener.setLoading(true);
+                              signUserUp(context);
+                              Timer(const Duration(seconds: 2), () {
+                                listener.setLoading(false);
+                              });
                             }
                           },
                           child: const Padding(

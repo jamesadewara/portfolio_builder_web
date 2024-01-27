@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class MyTextField extends StatelessWidget {
   const MyTextField(
@@ -8,7 +7,8 @@ class MyTextField extends StatelessWidget {
       this.validator,
       this.onChange,
       this.obscureText = false,
-      this.maxLength = null,
+      this.maxLength,
+      this.enabled = true,
       this.keyboardType = TextInputType.text,
       this.hintText = ""});
   final TextEditingController controller;
@@ -18,6 +18,7 @@ class MyTextField extends StatelessWidget {
   final String? Function(String? value)? validator;
   final String? Function(String? value)? onChange;
   final int? maxLength;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +29,7 @@ class MyTextField extends StatelessWidget {
       maxLength: maxLength,
       validator: validator,
       onChanged: onChange,
+      enabled: enabled,
       decoration: InputDecoration(
         // labelText: ,
         enabledBorder: OutlineInputBorder(
