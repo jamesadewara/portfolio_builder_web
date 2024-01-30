@@ -1,41 +1,47 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_model.dart';
+part of '../template_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class AuthModelAdapter extends TypeAdapter<AuthModel> {
+class TemplateModelAdapter extends TypeAdapter<TemplateModel> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
-  AuthModel read(BinaryReader reader) {
+  TemplateModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return AuthModel(
-      token: fields[0] as String,
-      uid: fields[1] as String?,
-      userName: fields[2] as String?,
-      userEmail: fields[3] as String?,
+    return TemplateModel(
+      id: fields[0] as String?,
+      name: fields[1] as String?,
+      description: fields[2] as String?,
+      defaultImage: fields[3] as String?,
+      mobileImage: fields[4] as String?,
+      file: fields[5] as String?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, AuthModel obj) {
+  void write(BinaryWriter writer, TemplateModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
-      ..write(obj.token)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.uid)
+      ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.userName)
+      ..write(obj.description)
       ..writeByte(3)
-      ..write(obj.userEmail);
+      ..write(obj.defaultImage)
+      ..writeByte(4)
+      ..write(obj.mobileImage)
+      ..writeByte(5)
+      ..write(obj.file);
   }
 
   @override
@@ -44,7 +50,7 @@ class AuthModelAdapter extends TypeAdapter<AuthModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AuthModelAdapter &&
+      other is TemplateModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

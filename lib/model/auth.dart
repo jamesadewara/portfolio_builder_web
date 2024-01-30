@@ -117,25 +117,25 @@ class Auth extends NotifyListener {
   }
 
   Future<void> logoutUser(BuildContext context) async {
-    AuthModel? userInfo = collection.get(0);
+    // AuthModel? userInfo = collection.get(0);
 
-    try {
-      if (userInfo != null) {
-        ApiRequest request = await authApi.signout(userInfo.token);
+    // try {
+    //   if (userInfo != null) {
+    //     ApiRequest request = await authApi.signout(userInfo.token);
 
-        if (request.error) {
-          genericErrorMessage(context, title: "Error", message: request.data);
-        }
-      } else {
-        // print("Error: AuthModel is null");
-      }
-    } catch (e) {
-      handleException(context, e);
-    }
-    await collection.clear();
-    await Navigator.pushReplacementNamed(context, AppRoutes.login);
+    //     if (request.error) {
+    //       genericErrorMessage(context, title: "Error", message: request.data);
+    //     }
+    //   } else {
+    //     // print("Error: AuthModel is null");
+    //   }
+    // } catch (e) {
+    //   handleException(context, e);
+    // }
+    collection.clear();
+    // await Navigator.pushReplacementNamed(context, AppRoutes.login);
 
-    notifyListeners();
+    // notifyListeners();
   }
 
   bool isLogged() {
@@ -159,7 +159,7 @@ class Auth extends NotifyListener {
             String jsonString = request.data;
             var jsonData = stringToJson(jsonString);
 
-            print(jsonData);
+            // print(jsonData);
 
             var authModel = AuthModel(
                 token: userInfo.token,
@@ -171,10 +171,10 @@ class Auth extends NotifyListener {
           }
         });
       } else {
-        print("Error: AuthModel is null");
+        // print("Error: AuthModel is null");
       }
     } catch (e) {
-      print("Error: $e");
+      // print("Error: $e");
     }
 
     return collection.get(0);

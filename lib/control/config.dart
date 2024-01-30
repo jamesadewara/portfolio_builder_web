@@ -10,6 +10,12 @@ Map api = {
       "delete": "users/delete/"
     }
   },
+  "template": {
+    "base_url": "http://127.0.0.1:8000/project",
+    "endpoints": {
+      "fetch": "templates/",
+    }
+  },
   "app": {
     "base_url": "https://stable-baselines.readthedocs.io",
     "version": '1.0.0',

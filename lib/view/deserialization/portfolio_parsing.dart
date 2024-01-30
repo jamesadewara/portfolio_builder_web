@@ -32,8 +32,8 @@ class Portfolio {
       url:
           "https://stackoverflow.com/questions/55885433/flutter-dart-how-to-add-copy-to-clipboard-on-tap-to-a-app",
       templateId: json['id'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 }

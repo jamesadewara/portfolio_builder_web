@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provder;
 import 'package:portfolio_builder_app/control/page_list.dart';
+import 'package:portfolio_builder_app/model/template_model.dart';
+import 'package:aitheme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:portfolio_builder_app/control/route_generator.dart';
 import 'package:portfolio_builder_app/control/app_theme.dart';
@@ -20,6 +22,8 @@ Future<void> initHive() async {
 
   Hive.registerAdapter(AuthModelAdapter());
   await Hive.openBox<AuthModel>('authdb');
+  Hive.registerAdapter(TemplateModelAdapter());
+  await Hive.openBox<TemplateModel>('templatedb');
 }
 
 void main() async {
@@ -43,8 +47,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Portfolio Splash',
       debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
+      theme: AiThemes().midNight(context),
+      darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
       initialRoute: AppRoutes.splash,
       routes: {
@@ -68,8 +72,8 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Portfolio Builder',
       debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
+      theme: AiThemes().midNight(context),
+      darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
       initialRoute: AppRoutes.dashboard,
       onGenerateRoute: RouteGenerator.generateRoute,

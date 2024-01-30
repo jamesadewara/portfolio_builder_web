@@ -4,65 +4,12 @@ import 'package:portfolio_builder_app/control/config.dart';
 import 'package:portfolio_builder_app/view/api/api_prop.dart';
 
 class TemplateApi {
-  String baseUrl = api["auth"]["base_url"];
-  Map endpoints = api["auth"]["endpoints"];
+  String baseUrl = api["template"]["base_url"];
+  Map endpoints = api["template"]["endpoints"];
 
-  Future<ApiRequest> signup(Map<String, dynamic> data) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/${endpoints["signup"]}'),
-      body: json.encode(data),
-      headers: {'Content-Type': 'application/json'},
-    );
-    return _handleResponse(response);
-  }
-
-  Future<ApiRequest> signin(Map<String, dynamic> data) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/${endpoints["signin"]}'),
-      body: json.encode(data),
-      headers: {'Content-Type': 'application/json'},
-    );
-    return _handleResponse(response);
-  }
-
-  Future<ApiRequest> updateUser(
-      String authToken, Map<String, dynamic> data) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/${endpoints["update"]}'),
-      body: json.encode(data),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $authToken',
-      },
-    );
-    return _handleResponse(response);
-  }
-
-  Future<ApiRequest> deleteUser(String authToken) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/${endpoints["delete"]}'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $authToken',
-      },
-    );
-    return _handleResponse(response);
-  }
-
-  Future<ApiRequest> getUser(String authToken) async {
+  Future<ApiRequest> getTemplates(String authToken) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/${endpoints["detail"]}'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $authToken',
-      },
-    );
-    return _handleResponse(response);
-  }
-
-  Future<ApiRequest> signout(String authToken) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/${endpoints["logout"]}'),
+      Uri.parse('$baseUrl/${endpoints["fetch"]}'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $authToken',

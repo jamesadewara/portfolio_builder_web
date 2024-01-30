@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +12,7 @@ import 'package:portfolio_builder_app/control/route_generator.dart';
 import 'package:portfolio_builder_app/control/validators.dart';
 import 'package:portfolio_builder_app/model/auth.dart';
 import 'package:portfolio_builder_app/control/notifier_listener.dart';
-import 'package:portfolio_builder_app/model/auth_model.dart';
+import 'package:portfolio_builder_app/view/components/msg_snackbar.dart';
 import 'package:portfolio_builder_app/view/components/mycard.dart';
 import 'package:portfolio_builder_app/view/components/mylisttile.dart';
 import 'package:portfolio_builder_app/view/components/mytextfield.dart';
@@ -71,7 +72,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    NotifyListener listener = context.watch<NotifyListener>();
     String tutorialUrl = api["app"]["tutorial"];
 
     return Scaffold(
@@ -282,7 +282,7 @@ class _AddNewPageState extends State<AddNewPage> {
                           height: 32,
                         ),
                         FutureBuilder(
-                          future: fetchTemplateData(),
+                          future: fetchTemplateData(context),
                           builder: (context,
                               AsyncSnapshot<List<Template>> snapshot) {
                             if (snapshot.connectionState ==
@@ -444,6 +444,8 @@ class TemplatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        const GenericMessage(title: "title", message: "message") as SnackBar);
     return Scaffold(
         body: Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -477,7 +479,7 @@ class TemplatePage extends StatelessWidget {
         ),
         Expanded(
           child: FutureBuilder(
-            future: fetchTemplateData(),
+            future: fetchTemplateData(context),
             builder: (context, AsyncSnapshot<List<Template>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -494,8 +496,23 @@ class TemplatePage extends StatelessWidget {
                               id: template![index].id,
                               title: template[index].name,
                               subtitle: template[index].description,
-                              image: template[index].image,
-                              onPressed: () {},
+                              image: ResponsiveBreakpoints.of(context)
+                                      .between(MOBILE, TABLET)
+                                  ? template[index].mobileImage
+                                  : template[index].defaultImage,
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return ImageDialog(
+                                      image: ResponsiveBreakpoints.of(context)
+                                              .between(MOBILE, TABLET)
+                                          ? template[index].mobileImage
+                                          : template[index].defaultImage,
+                                    );
+                                  },
+                                );
+                              },
                             ),
                         childCount: template?.length));
               }
@@ -590,6 +607,44 @@ class SettingsPage extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class ImageDialog extends StatelessWidget {
+  final String image;
+  const ImageDialog({super.key, required this.image});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: CachedNetworkImage(
+                imageUrl: image,
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    Center(
+                  child:
+                      LinearProgressIndicator(value: downloadProgress.progress),
+                ),
+                errorWidget: (context, url, error) =>
+                    Image.asset("assets/images/icon.png"),
+              ),
+            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  }),
+            )
+          ],
+        ));
   }
 }
 
